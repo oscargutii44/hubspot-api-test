@@ -1,26 +1,28 @@
-// Importamos la función handleContacts desde la capa de controladores
-// Esta función se encarga de obtener los contactos desde el servicio
-import { handleContacts } from "./controllers/contactsController.js";
-
-// Importamos la función showContacts desde la capa de vistas
-// Esta función muestra los contactos en la consola de forma legible
+import {
+  handleContacts,
+  handleCreateContact,
+} from "./controllers/contactsController.js";
 import { showContacts } from "./views/consoleView.js";
 
-// Definimos la función principal que ejecutará el flujo del programa
 async function main() {
-  console.log("Obteniendo contactos de HubSpot...\n");
-
   try {
-    // Llamamos a la función que obtiene los contactos desde la API
-    const contacts = await handleContacts();
+    console.log("Creando un nuevo contacto en HubSpot...\n");
 
-    // Mostramos los contactos obtenidos en la consola
+    const newContact = await handleCreateContact({
+      firstname: "Canelita",
+      lastname: "Sierra",
+      email: "canelita@gmail.com",
+    });
+
+    console.log("✅ Contacto creado exitosamente:");
+    console.log(newContact);
+
+    console.log("\nObteniendo contactos de HubSpot...\n");
+    const contacts = await handleContacts();
     showContacts(contacts);
   } catch (error) {
-    // Si ocurre algún error durante el proceso, lo mostramos en consola
-    console.error("Error:", error.message);
+    console.error("❌ Error:", error.message);
   }
 }
 
-// Ejecutamos la función principal
 main();
