@@ -1,40 +1,39 @@
+// Importamos las funciones del controlador
+// handleContacts: obtiene todos los contactos
+// handleCreateContact: crea un nuevo contacto
+// handleGetContact: obtiene un contacto por su ID
 import {
   handleContacts,
   handleCreateContact,
   handleGetContact,
 } from "./controllers/contactsController.js";
+
+// Importamos la función que muestra los contactos en la consola
 import { showContacts } from "./views/consoleView.js";
 
+// Función principal que ejecuta el flujo del programa
 async function main() {
   try {
-    // 1️ Crear un contacto
-    console.log("Creando un nuevo contacto en HubSpot...\n");
-
+    // Creamos un nuevo contacto enviando los datos al controlador
     const newContact = await handleCreateContact({
-      firstname: "Marcelo",
-      lastname: "Vieira",
-      email: "m12@gmail.com",
+      firstname: "Eduardo",
+      lastname: "Reyes",
+      email: "ereyes@gmail.com",
     });
-
     console.log("Contacto creado exitosamente:");
-    console.log(newContact);
 
-    // 2️ Traer todos los contactos
-    console.log("\nObteniendo todos los contactos de HubSpot...\n");
-    const contacts = await handleContacts();
-    showContacts(contacts);
-
-    // 3️ Recuperar un contacto específico por ID
-    // Reemplaza con un ID válido de HubSpot (puede ser el del contacto que acabamos de crear)
+    // Recuperamos un contacto específico usando el ID del contacto recién creado
     const contactId = newContact.id;
-    console.log(`\nRecuperando contacto específico con ID: ${contactId}\n`);
     const contact = await handleGetContact(contactId);
 
+    // Mostramos en consola el contacto recuperado
     console.log("Contacto recuperado:");
-    console.log(contact);
+    showContacts(contact);
   } catch (error) {
+    // Si ocurre algún error durante el proceso, lo mostramos en consola
     console.error("Error:", error.message);
   }
 }
 
+// Ejecutamos la función principal
 main();
