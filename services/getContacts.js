@@ -1,39 +1,42 @@
-// Importamos la conexión configurada a la API de HubSpot
+// Importamos la instancia de conexión a la API de HubSpot
 // Esta conexión ya incluye la URL base y las credenciales necesarias
 import hubspotConnection from "../hubspotConnection.js";
 
-// Definimos una función asíncrona para obtener todos los contactos desde HubSpot
+// Función asíncrona para obtener todos los contactos desde HubSpot
 export async function getAllContacts() {
   try {
-    // Creamos un arreglo vacío donde guardaremos todos los contactos
+    // Arreglo donde se guardarán todos los contactos obtenidos
     const contacts = [];
-    // La variable 'after' se usa para manejar la paginación de la API
-    // (HubSpot devuelve los resultados en páginas de 100 registros por defecto)
+    // Variable para manejar la paginación de HubSpot
     let after = null;
 
-    // Usamos un ciclo do...while para hacer varias peticiones
-    // mientras existan más páginas de contactos por obtener
+    // Hacemos peticiones mientras haya más páginas de contactos
     do {
-      // Realizamos una solicitud GET al endpoint de contactos de HubSpot
+      // Solicitamos los contactos a la API
       const response = await hubspotConnection.get("/crm/v3/objects/contacts", {
-        // Enviamos como parámetros el límite y el token 'after' (si existe)
-        params: { limit: 100, after },
+        params: { limit: 100, after }, // Limitamos a 100 contactos por página y enviamos token de paginación
+        timeout: 5000, // Timeout de 5 segundos por cada petición
       });
 
-      // Desestructuramos los resultados y la información de paginación
+      // Extraemos los resultados y la información de paginación
       const { results, paging } = response.data;
-
       // Agregamos los contactos obtenidos al arreglo general
       contacts.push(...results);
-
-      // Si hay una página siguiente, actualizamos el valor de 'after'
+      // Actualizamos el token 'after' para la siguiente página, si existe
       after = paging?.next?.after;
-    } while (after); // El ciclo continúa mientras haya más páginas
+    } while (after);
 
-    // Si todo salió bien, devolvemos un objeto con éxito y la lista de contactos
+    // Retornamos un objeto indicando éxito y la lista de contactos
     return { success: true, contacts };
   } catch (error) {
-    // Si ocurre un error, devolvemos un objeto con el estado y el mensaje del error
+    // Si ocurre un timeout, devolvemos un mensaje específico
+    if (error.code === "ECONNABORTED") {
+      return {
+        success: false,
+        error: "Timeout: la API de HubSpot tardó demasiado",
+      };
+    }
+    // En cualquier otro error, devolvemos el mensaje de la API o el error general
     return {
       success: false,
       error: error.response?.data?.message || error.message,

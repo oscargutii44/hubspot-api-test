@@ -16,13 +16,21 @@ export async function getContactById(contactId) {
           // Indicamos qué campos del contacto queremos traer
           properties: "firstname,lastname,email,phone",
         },
+        timeout: 5000, // Timeout de 5 segundos para la petición
       }
     );
 
     // Si la solicitud es exitosa, devolvemos un objeto con éxito y los datos del contacto
     return { success: true, contact: response.data };
   } catch (error) {
-    // Si ocurre un error, devolvemos un objeto con éxito en falso y el mensaje de error
+    // Si ocurre un timeout, devolvemos un mensaje específico
+    if (error.code === "ECONNABORTED") {
+      return {
+        success: false,
+        error: "Timeout: la API de HubSpot tardó demasiado",
+      };
+    }
+    // En cualquier otro error, devolvemos el mensaje de la API o el error general
     return {
       success: false,
       error: error.response?.data?.message || error.message,

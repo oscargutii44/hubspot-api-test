@@ -16,9 +16,9 @@ async function main() {
   try {
     // Creamos un nuevo contacto enviando los datos al controlador
     const newContact = await handleCreateContact({
-      firstname: "Eduardo",
-      lastname: "Reyes",
-      email: "ereyes@gmail.com",
+      firstname: "Bad",
+      lastname: "Gyal",
+      email: "bgyal@gmail.com",
     });
     console.log("Contacto creado exitosamente:");
 
