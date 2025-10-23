@@ -1,39 +1,39 @@
 // services/getContact.js
-// Importamos la instancia de conexión a la API de HubSpot
-import hubspotConnection from "../hubspotConnection.js";
+import hubspotConnection from "../Connections/hubspotConnection.js";
 
 /**
- * Función asíncrona para obtener un contacto por su ID
- * @param {string} contactId - ID del contacto que queremos obtener
+ * Obtiene la información de un contacto de HubSpot por su ID.
+ * Devuelve solo las propiedades principales.
  */
 export async function getContactById(contactId) {
   try {
-    // Hacemos una solicitud GET al endpoint de contactos con el ID específico
     const response = await hubspotConnection.get(
-      `/crm/v3/objects/contacts/${contactId}`,
-      {
-        params: {
-          // Indicamos qué campos del contacto queremos traer
-          properties: "firstname,lastname,email,phone",
-        },
-        timeout: 5000, // Timeout de 5 segundos para la petición
-      }
+      `/crm/v3/objects/contacts/${contactId}`
     );
 
-    // Si la solicitud es exitosa, devolvemos un objeto con éxito y los datos del contacto
-    return { success: true, contact: response.data };
-  } catch (error) {
-    // Si ocurre un timeout, devolvemos un mensaje específico
-    if (error.code === "ECONNABORTED") {
-      return {
-        success: false,
-        error: "Timeout: la API de HubSpot tardó demasiado",
-      };
+    // Aquí están las propiedades reales dentro del objeto devuelto por HubSpot
+    const properties =
+      response.data.contact?.properties || response.data.properties;
+
+    // Si el contacto no existe, devolvemos null
+    if (!properties) {
+      console.warn(
+        `⚠️ No se encontraron propiedades para el contacto ${contactId}`
+      );
+      return null;
     }
-    // En cualquier otro error, devolvemos el mensaje de la API o el error general
+
+    // Devolvemos solo los campos que nos interesan
     return {
-      success: false,
-      error: error.response?.data?.message || error.message,
+      firstName: properties.firstname || null,
+      lastName: properties.lastname || null,
+      email: properties.email || null,
     };
+  } catch (error) {
+    console.error(
+      `❌ Error trayendo contacto ${contactId} de HubSpot:`,
+      error.response?.data || error
+    );
+    return null;
   }
 }

@@ -1,6 +1,6 @@
 // Importamos la instancia de conexión a la API de HubSpot
 // Esta conexión ya incluye la URL base y las credenciales necesarias
-import hubspotConnection from "../hubspotConnection.js";
+import hubspotConnection from "../Connections/hubspotConnection.js";
 
 // Función asíncrona para obtener todos los contactos desde HubSpot
 export async function getAllContacts() {

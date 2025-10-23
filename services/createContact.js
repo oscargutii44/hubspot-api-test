@@ -1,5 +1,5 @@
 // Importamos la instancia de conexión a la API de HubSpot
-import hubspotConnection from "../hubspotConnection.js";
+import hubspotConnection from "../Connections/hubspotConnection.js";
 
 // Función asíncrona para crear un nuevo contacto en HubSpot
 // Recibe un objeto 'contactData' con las propiedades del contacto
